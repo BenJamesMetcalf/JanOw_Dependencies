@@ -222,6 +222,8 @@ if( -e $fastq1_trimd) {
     print "Beginning cutadapt\n";
     system("cutadapt -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -q 20 --minimum-length 50 --paired-output temp2.fastq -o temp1.fastq $fastq1 $fastq2");
     system("cutadapt -b AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT -q 20 --minimum-length 50 --paired-output $fastq1_trimd -o $fastq2_trimd temp2.fastq temp1.fastq");
+    #system("cutadapt -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b CTGTCTCTTATA -q 20 --minimum-length 50 --paired-output temp2.fastq -o temp1.fastq $fastq1 $fastq2"); #Removing Nextera#
+    #system("cutadapt -b AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT -b CTGTCTCTTATA -q 20 --minimum-length 50 --paired-output $fastq1_trimd -o $fastq2_trimd temp2.fastq temp1.fastq");
     my $tempDel_1 = "temp1.fastq";
     my $tempDel_2 = "temp2.fastq";
     unlink $tempDel_1;
@@ -233,7 +235,7 @@ if( -d "./velvet_output") {
 } else {
     print "Beginning Velvet\n";
     my $velvetK_val = `velvetk.pl --best --size "$gSize" "$fastq1_trimd" "$fastq2_trimd"`;
-    `VelvetOptimiser.pl -s "$velvetK_val" -e "$velvetK_val" -o "-scaffolding no" -f "-shortPaired -separate -fastq $fastq1_trimd $fastq2_trimd" -d velvet_output`;
+    `VelvetOptimiser.pl -s "$velvetK_val" -e "$velvetK_val" -o "-scaffolding no" -f "-shortPaired -separate -fastq $fastq1_trimd $fastq2_trimd" -d velvet_output`;  #-c "(Lbp*n50)/ncon"`;
 }
 
 print "Beginning Prodigal\n";

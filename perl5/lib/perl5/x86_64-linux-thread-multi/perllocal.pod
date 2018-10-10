@@ -1,0 +1,22 @@
+=head2 Mon Nov 20 14:54:19 2017: C<Module> L<Time::Piece|Time::Piece>
+
+=over 4
+
+=item *
+
+C<installed into: /scicomp/home/mpi7/perl5/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.3202>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
