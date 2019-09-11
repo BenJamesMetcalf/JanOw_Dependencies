@@ -129,9 +129,15 @@ then
 	#echo "Flow Cell path is: $flowPath";
 	flowName=$(basename "$flowPath" | sed 's/_new//g')
 	flowID=$(echo "$flowName" | sed 's/.*-\([A-Za-z0-9]\+\).*/\1/g')
-	instrID=$(echo "$flowName" | sed 's/.*_\(M032\(32\|20\)\)_.*/\1/g')
+	instrID=$(echo "$flowName" | sed 's/.*_\(M[0-9]\+\)_.*/\1/g')
+	#instrID=$(echo "$flowName" | sed 's/.*_\(M032\(32\|20\)\)_.*/\1/g')
 	#echo "Flow Cell: $flowName | Flowcell ID: $flowID | Instrument: $instrID"
-	instrDir="/scicomp/instruments/18-B-429_Illumina-MiSeq-$instrID/$flowName/Data/Intensities/BaseCalls/"
+	if [[ $instrID == M06079 ]]
+	then
+	    instrDir="/scicomp/instruments/18-B-433_Illumina-MiSeq-$instrID/$flowName/Data/Intensities/BaseCalls/"
+	else
+	    instrDir="/scicomp/instruments/18-B-429_Illumina-MiSeq-$instrID/$flowName/Data/Intensities/BaseCalls/"
+	fi
 	#ls "$instrDir"
 	echo "screen -dmS $flowID bash $comm -s $instrDir -r $allDB_dir -o $out_dir/$flowName"
 	screen -dmS "$flowID" bash "$comm" -s "$instrDir" -r "$allDB_dir" -o "$out_dir/$flowName"
@@ -142,9 +148,15 @@ then
     do
 	flowName=$(echo "$flowName" | sed 's/_new//g')
 	flowID=$(echo "$flowName" | sed 's/.*-\([A-Za-z0-9]\+\).*/\1/g')
-        instrID=$(echo "$flowName" | sed 's/.*_\(M032\(32\|20\)\)_.*/\1/g')
+	instrID=$(echo "$flowName" | sed 's/.*_\(M[0-9]\+\)_.*/\1/g')
+        #instrID=$(echo "$flowName" | sed 's/.*_\(M032\(32\|20\)\)_.*/\1/g')
         #echo "Flow Cell: $flowName | Flowcell ID: $flowID | Instrument: $instrID"
-        instrDir="/scicomp/instruments/18-B-429_Illumina-MiSeq-$instrID/$flowName/Data/Intensities/BaseCalls/"
+        if [[ $instrID == M06079 ]]
+        then
+            instrDir="/scicomp/instruments/18-B-433_Illumina-MiSeq-$instrID/$flowName/Data/Intensities/BaseCalls/"
+	else
+	    instrDir="/scicomp/instruments/18-B-429_Illumina-MiSeq-$instrID/$flowName/Data/Intensities/BaseCalls/"
+        fi
         #ls "$instrDir"
         echo "screen -dmS $flowID bash $comm -s $instrDir -r $allDB_dir -o $out_dir/$flowName"
 	screen -dmS "$flowID" bash "$comm" -s "$instrDir" -r "$allDB_dir" -o "$out_dir/$flowName"

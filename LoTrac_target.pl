@@ -235,7 +235,8 @@ if( -d "./velvet_output") {
 } else {
     print "Beginning Velvet\n";
     my $velvetK_val = `velvetk.pl --best --size "$gSize" "$fastq1_trimd" "$fastq2_trimd"`;
-    `VelvetOptimiser.pl -s "$velvetK_val" -e "$velvetK_val" -o "-scaffolding no" -f "-shortPaired -separate -fastq $fastq1_trimd $fastq2_trimd" -d velvet_output`;  #-c "(Lbp*n50)/ncon"`;
+    #`VelvetOptimiser.pl -s "$velvetK_val" -e "$velvetK_val" -o "-scaffolding no" -f "-shortPaired -separate -fastq $fastq1_trimd $fastq2_trimd" -d velvet_output`;  #-c "(Lbp*n50)/ncon"`;
+    `VelvetOptimiser_strepLab.pl -c Lbp -s "$velvetK_val" -e "$velvetK_val" -o "-scaffolding no" -f "-shortPaired -separate -fastq $fastq1_trimd $fastq2_trimd" -d velvet_output`;
 }
 
 print "Beginning Prodigal\n";

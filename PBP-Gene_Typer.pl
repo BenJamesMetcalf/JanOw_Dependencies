@@ -379,8 +379,8 @@ foreach my $pbp (@pbp_input) {
 }
 
 if ($species eq "GBS") {
-    print $fh "Sample_Name\tPBP_Code(1A:2X)\n";
-    print $fh "$outName\t$code_1A:$code_2X\n";
+    print $fh "Sample_Name\tPBP_Code(1A:2B:2X)\n";
+    print $fh "$outName\t$code_1A:$code_2B:$code_2X\n";
 } elsif ($species eq "SPN") {
     print $fh "Sample_Name\tPBP_Code(1A:2B:2X)\n";
     print $fh "$outName\t$code_1A:$code_2B:$code_2X\n";
