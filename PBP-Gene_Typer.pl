@@ -199,7 +199,7 @@ sub PBP_blastTyper {
 	my $new_PBPseq = "PBP_".$pbp_type."_query_sequence.faa";
 	rename("TEMP_query_sequence.faa",$new_PBPseq);
 	my $fragPath = File::Spec->rel2abs("$new_PBPseq");
-	open(my $f_new,'>>',"TEMP_newPBP_allele_info.txt") or die "Could not open file 'TEMP_newPBP_allele_info.txt' $!";
+	open(my $f_new,'>>',"newPBP_allele_info.txt") or die "Could not open file 'newPBP_allele_info.txt' $!";
 	print $f_new "$outName\t$fragPath\t$pbp_type\n";
 	close $f_new;
     } else {
