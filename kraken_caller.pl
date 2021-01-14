@@ -41,10 +41,10 @@ sub help
 die <<EOF
 
 USAGE
-kraken_caller.pl -a <alignment seq: fasta>
+kraken_caller.pl -f <alignment seq: fasta>
 
     -h   print usage
-    -a   Kraken report (including full path)
+    -f   Kraken report (including full path)
 
 EOF
 }
@@ -88,10 +88,11 @@ for (my $i = 0; $i < $#kLine_arr; $i++) {
 
     if ($cliff_dif >= $maxCliff && $kraknRead1 >= 50 && $unclass[0][0] <= 5.00) {
 	$maxCliff = $cliff_dif;
-	$bestID = "$kraknID,$kraknRead1,$kraknRead2,$cliff_dif,$cliff_mult,$kraknReadC,$kraknReadT,$kraknCode,$kraknNCBI,$unclass[0][0]";
+	$bestID = "$kraknID,$kraknRead1,$kraknRead2,$cliff_dif,$cliff_mult,$kraknReadC,$kraknReadT,$kraknCode,$kraknNCBI,$unclass[0][0],GOOD";
     } elsif ($cliff_dif >= $maxCliff && ($kraknRead1 < 50 || $unclass[0][0] > 5.00)) {
+	$maxCliff = $cliff_dif;
 	$bestID = "$kraknID,$kraknRead1,$kraknRead2,$cliff_dif,$cliff_mult,$kraknReadC,$kraknReadT,$kraknCode,$kraknNCBI,$unclass[0][0],FLAG";
     }
 }
 
-print "$bestID\n";
+print "$bestID";

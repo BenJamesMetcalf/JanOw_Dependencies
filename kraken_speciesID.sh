@@ -6,12 +6,14 @@ export PATH=$PATH:$temp_path
 #. /usr/share/Modules/init/bash
 ###This script validates the input arguments and creates the job-control.txt file which is needed to submit the qsub array job to the cluster.###
 
-while getopts :i:f:s:o: option
+ani_flag=''
+while getopts :i:f:s:o:a option
 do
     case $option in
         i) instr_dir=$OPTARG;;
         f) instr_file=$OPTARG;;
         n) name=$OPTARG;;
+	a) ani_flag='TRUE';;
         o) output_dir=$OPTARG;;
     esac
 done
@@ -73,10 +75,15 @@ else
     echo "The files will be saved to the following directory: $outDir"
 fi
 
+if [[ $ani_flag ]]
+then
+    echo "Will run FastANI on all Fasta sequences"
+fi
+
 ###Start Doing Stuff###
 cd "$outDir"
 module load kraken/1.0.0
-echo "Sample,SpeciesID,Read1_%,Read2_%,Diff,Diff_mult,Read_Clade,Read_Taxon,Rank_Code,NCBI_ID,Unclass_Reads,Comment" >> "$outName"
+echo "Sample,SpeciesID,Read1_%,Read2_%,Diff,Diff_mult,Read_Clade,Read_Taxon,Rank_Code,NCBI_ID,Unclass_Reads,Comment,FastANI_ID,ANI,Match_Frags,Tot_Frags" >> "$outName"
 
 if [[ "$type" == "dir" ]]
 then
@@ -121,8 +128,8 @@ then
 	    kraken-report --db /scicomp/reference/kraken/OLD/0.10.5/urdo_bacteria_and_virus Kraken_out.txt > Kraken_report.txt
 	    #speciesID=$(cat Kraken_report.txt | awk -F"\t" '$1 >= 50 {print $0}' | tail -n1 | awk -F"\t" '{print $6}' | sed 's/^ \+//g')
 	    speciesID=$(kraken_caller.pl -f Kraken_report.txt |  sed -n 2p)
-	    echo "$sampl_name,$speciesID"
-	    echo "$sampl_name,$speciesID" >> "$outName"
+	    echo "$sampl_name,$speciesID,NA,NA,NA,NA"
+	    echo "$sampl_name,$speciesID,NA,NA,NA,NA" >> "$outName"
             ###Prepare script for next sample###
 	    if [[ $(echo $speciesID | awk -F"," '{print $10}') != "FLAG" ]]
 	    then
@@ -159,18 +166,25 @@ then
 		kraken-report --db /scicomp/reference/kraken/OLD/0.10.5/urdo_bacteria_and_virus Kraken_out.txt > Kraken_report.txt
                 #speciesID=$(cat Kraken_report.txt | awk -F"\t" '$1 >= 50 {print $0}' | tail -n1 | awk -F"\t" '{print $6}' | sed 's/^ \+//g')
 		speciesID=$(kraken_caller.pl -f Kraken_report.txt |  sed -n 2p)
-		echo "$sampl_name,$speciesID"
-		echo "$sampl_name,$speciesID" >> "$outName"
+		echo "$sampl_name,$speciesID,NA,NA,NA,NA"
+		echo "$sampl_name,$speciesID,NA,NA,NA,NA" >> "$outName"
 	    fi
-	elif [[ $(echo $readLine | cut -d, -f2) =~ \.fasta$|\.fna$ ]]
+	elif [[ $(echo $readLine | cut -d, -f2) =~ \.fasta$|\.fna$|\.fa$ ]]
 	then
 	    echo "This is a fasta file"
 	    fastaFile=$(echo $readLine | cut -d, -f2)
 	    kraken -db /scicomp/reference/kraken/OLD/0.10.5/urdo_bacteria_and_virus --threads 18 --fasta-input --output Kraken_out.txt "$fastaFile"
 	    kraken-report --db /scicomp/reference/kraken/OLD/0.10.5/urdo_bacteria_and_virus Kraken_out.txt > Kraken_report.txt
 	    speciesID=$(kraken_caller.pl -f Kraken_report.txt |  sed -n 2p)
-	    echo "$sampl_name,$speciesID"
-	    echo "$sampl_name,$speciesID" >> "$outName"
+            ANI_out="NA,NA,NA,NA"
+            if [[ $ani_flag || $(echo $speciesID | awk -F"," '{print $11}') == "FLAG" ]]
+            then
+                echo "RUN FastANI"
+		fastANI -q "$fastaFile" --rl /scicomp/groups/OID/NCIRD/DBD/RDB/Strep_Lab/JanOw_Dependencies/fastANI_strep_ref.txt -o "$sampl_name"_fastANI_out.txt
+		ANI_out=$(head -n1 "$sampl_name"_fastANI_out.txt | sed 's|/scicomp/home-pure/ycm6/PROJECTS_StrepLab/2021/Kraken_SpeciesID_12-16-2020/genomes/||g' | tr '\t' ',' | cut -d, -f2-)
+            fi
+	    echo "$sampl_name,$speciesID,$ANI_out"
+	    echo "$sampl_name,$speciesID,$ANI_out" >> "$outName"
 	fi
         ###Prepare script for next sample###
 	if [[ $(echo $speciesID | awk -F"," '{print $11}') != "FLAG" ]]
